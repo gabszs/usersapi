@@ -15,6 +15,7 @@ alembic = "^1.13.1"
 python-decouple = "^3.8"
 httpx = "^0.26.0"
 passlib = "^1.7.4"
+pydantic = {extras = ["email"], version = "^2.5.2"}
 
 
 [tool.poetry.group.dev.dependencies]
@@ -32,6 +33,7 @@ lint = 'ruff .'
 run = 'uvicorn app.app:app --reload'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=app -vv'
+hook_commit = "pre-commit run --all-files"
 post_test = 'coverage html'
 
 [tool.ruff]
@@ -93,6 +95,3 @@ skip-magic-trailing-comma = false
 
 # Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
-
-
-
