@@ -1,6 +1,7 @@
 from typing import List
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import EmailStr
 
 
@@ -14,6 +15,7 @@ class UserPublicDto(BaseModel):
     id: int
     username: str
     email: EmailStr
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserDB(UserSchema):
@@ -26,3 +28,8 @@ class UserList(BaseModel):
 
 class Message(BaseModel):
     detail: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

@@ -14,9 +14,11 @@ sqlalchemy = "^2.0.23"
 alembic = "^1.13.1"
 python-decouple = "^3.8"
 httpx = "^0.26.0"
-passlib = "^1.7.4"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pydantic = {extras = ["email"], version = "^2.5.2"}
 pydantic-settings = "^2.1.0"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+python-multipart = "^0.0.6"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -34,7 +36,7 @@ lint = 'ruff .'
 run = 'uvicorn app.app:app --reload'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=app -vv'
-hook_commit = "pre-commit run --all-files"
+commit_hook = "pre-commit run --all-files"
 post_test = 'coverage html'
 
 [tool.ruff]
