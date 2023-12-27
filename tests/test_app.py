@@ -15,7 +15,7 @@ def test_GET_should_return_200_success(client, user):
 
 
 def test_POST_should_return_400_already_registered(client, user):
-    response = client.post("/users/", json={"username": "Test", "email": "gabriel@gmail.com", "password": "password"})
+    response = client.post("/users/", json={"username": "Teste", "email": "teste@test.com", "password": "testtest"})
 
     assert response.status_code == 400
     assert {"detail": "Username already registered"}
@@ -29,27 +29,10 @@ def test_POST_should_return_201_success(client):
     assert response.json() == {"username": "gabriel", "email": "gabriel@gmail.com", "id": 1}
 
 
-def test_PUT_should_return_200_success(client, user):
-    response = client.put(
-        "/users/1", json={"username": "Pedro", "email": "pedro@gmail.com", "password": "new_password"}
-    )
-
-    assert response.status_code == 200
-    assert response.json() == {"id": 1, "username": "Pedro", "email": "pedro@gmail.com"}
-
-
-def test_PUT_should_return_404_failed(client, user):
-    response = client.put(
-        "/users/0", json={"username": "Pedro", "email": "pedro@gmail.com", "password": "new_password"}
-    )
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "User not found"}
-
-
-def test_POST_should_return_422_Unprocessed_failed(client):
+def test_POST_should_return_422_Unprocessed_failed(client, token):
     response = client.post(
         "/users/",
+        headers={'Authorization': f"Bearer {token}"},
         json={
             "username": "Gabriel",
             "email": "gabriel.carvalho@huawei.com",
@@ -60,18 +43,45 @@ def test_POST_should_return_422_Unprocessed_failed(client):
     assert response.status_code == 422
 
 
-def test_DELETE_should_return_404_failed(client, user):
-    response = client.delete("/users/2")
+def test_PUT_should_return_200_success(client, user, token):
+    response = client.put(
+        "/users/1",
+        headers={'Authorization': f"Bearer {token}"},
+          json={"username": "Pedro", "email": "pedro@gmail.com", "password": user.clean_password}
+    )
 
-    response.status_code == 404
-    assert response.json() == {"detail": "User not found"}
+    assert response.status_code == 200
+    assert response.json() == {"id": 1, "username": "Pedro", "email": "pedro@gmail.com"}
 
 
-def test_DELETE_should_return_200_OK_success(client, user):
-    response = client.delete("/users/1")
+def test_PUT_should_return_400_failed(client, user, token):
+    response = client.put(
+        "/users/0",headers={'Authorization': f"Bearer {token}"}, json={"username": "Pedro", "email": "pedro@gmail.com", "password": "new_password"}
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Not enough permissions"}
+
+
+
+def test_DELETE_should_return_404_failed(client, user, token):
+    response = client.delete("/users/2", headers={'Authorization': f"Bearer {token}"})
+
+    response.status_code == 400
+    assert response.json() == {"detail": "Not enough permissions"}
+
+
+def test_DELETE_should_return_200_OK_success(client, user, token):
+    response = client.delete("/users/1", headers={"Authorization": f"Bearer {token}"})
 
     assert response.status_code == 200
     assert response.json() == {"detail": "User deleted"}
+
+def test_get_route_without_token(client, user, token):
+    response = client.delete("/users/1", headers={"Authorization": ""})
+
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Not authenticated"}
 
 
 def test_get_token(client, user):
@@ -84,3 +94,15 @@ def test_get_token(client, user):
     assert response.status_code == 200
     assert 'access_token' in token
     assert 'token_type' in token
+
+def test_get_token_400_incorrect_password(client, user):
+    request = client.post("/token/", data={'username': user.email, 'password': "wrong_password"})
+
+    assert request.status_code == 400
+    assert request.json() == {"detail": "Incorrect email or password"}
+
+def test_get_token_400_incorrect_username(client, user):
+    request = client.post("/token/", data={'username': "wrong_user", 'password': user.clean_password})
+
+    assert request.status_code == 400
+    assert request.json() == {"detail": "Incorrect email or password"}

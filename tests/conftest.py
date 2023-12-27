@@ -8,6 +8,7 @@ from app.app import app
 from app.database import get_session
 from app.models import Base
 from app.models import User
+from app.security import get_password_hash
 
 
 @pytest.fixture
@@ -37,13 +38,24 @@ def client(session):
 
 @pytest.fixture
 def user(session):
-    password = "testepassword"
-    user = User(username="Test", email="teste@test.com", password=password)
-
-
+    password = 'testtest'
+    user = User(
+        username='Teste',
+        email='teste@test.com',
+        password=get_password_hash(password),
+    )
     session.add(user)
     session.commit()
     session.refresh(user)
 
-    user.clean_password = password
+    user.clean_password = 'testtest'
+
     return user
+
+@pytest.fixture
+def token(client, user):
+    response = client.post(
+        '/token',
+        data={"username": user.email, "password": user.clean_password}
+    )
+    return response.json()['access_token']
