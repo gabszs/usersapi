@@ -1,5 +1,8 @@
 from fastapi import FastAPI
-from app.routes import auth_router, users_router, ping_router
+
+from app.routes import auth_router
+from app.routes import ping_router
+from app.routes import users_router
 
 app = FastAPI(
     title="UsersApi",
@@ -13,6 +16,6 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
-app.include_router(ping_router)
 app.include_router(users_router)
+app.include_router(ping_router)
 

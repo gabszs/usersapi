@@ -9,6 +9,17 @@ from app.database import get_session
 from app.models import Base
 from app.models import User
 from app.security import get_password_hash
+import factory
+
+
+class UserFactory(factory.Factory):
+    class Meta:
+        model = User
+
+    id = factory.Sequence(lambda x: x)
+    username = factory.LazyAttribute(lambda obj: f"test{obj.id}")
+    email = factory.LazyAttribute(lambda obj: f"{obj.username}@test.com")
+    password = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
 
 
 @pytest.fixture
@@ -39,19 +50,28 @@ def client(session):
 @pytest.fixture
 def user(session):
     password = "testtest"
-    user = User(
-        username="Teste",
-        email="teste@test.com",
-        password=get_password_hash(password),
-    )
+    user = UserFactory(password=get_password_hash(password))
+
     session.add(user)
     session.commit()
     session.refresh(user)
 
-    user.clean_password = "testtest"
+    user.clean_password = password
 
     return user
 
+@pytest.fixture
+def other_user(session):
+    password = "testtest"
+    user = UserFactory(password=get_password_hash(password))
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    user.clean_password = password
+
+    return user
 
 @pytest.fixture
 def token(client, user):

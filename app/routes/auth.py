@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
@@ -9,13 +11,14 @@ from app.database import get_session
 from app.models import User
 from app.schemas import Token
 from app.security import create_access_token
-from app.security import verify_password
-from typing import Annotated
+from app.security import verify_password, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]
 Sessions = Annotated[Session, Depends(get_session)]
+CurrentUser = Annotated[User, Depends(get_current_user)]
+
 
 @router.post("/token", response_model=Token)
 def login_for_access_token(
@@ -32,4 +35,12 @@ def login_for_access_token(
 
     access_token = create_access_token(data={"sub": user.email})
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return Token(access_token=access_token, token_type="bearer")
+
+@router.post('/refresh_token', response_model=Token)
+def refresh_access_token(
+    user: User = Depends(get_current_user),
+):
+    new_access_token = create_access_token(data={'sub': user.email})
+
+    return {'access_token': new_access_token, 'token_type': 'bearer'}
