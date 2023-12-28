@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.routes import auth_router
 from app.routes import ping_router
+from app.routes import todos_router
 from app.routes import users_router
 
 app = FastAPI(
@@ -15,7 +16,7 @@ app = FastAPI(
     summary="WebApi build on best market practices such as TDD, Clean Arch, Data Validation with Pydantic V2",
 )
 
-app.include_router(auth_router)
+app.include_router(todos_router)
 app.include_router(users_router)
+app.include_router(auth_router)
 app.include_router(ping_router)
-

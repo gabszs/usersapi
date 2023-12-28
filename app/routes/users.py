@@ -2,19 +2,19 @@ from typing import Annotated
 
 from fastapi import APIRouter
 from fastapi import Depends
-from fastapi import HTTPException, status
+from fastapi import HTTPException
+from fastapi import status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database import get_session
 from app.models import User
-from app.schemas import Message
-from app.schemas import UserList
-from app.schemas import UserPublicDto
-from app.schemas import UserSchema
+from app.schemas.base_schemas import Message
+from app.schemas.users_schema import UserList
+from app.schemas.users_schema import UserPublicDto
+from app.schemas.users_schema import UserSchema
 from app.security import get_current_user
 from app.security import get_password_hash
-
 
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -50,7 +50,7 @@ def create_user(user: UserSchema, session: Sessions):
 def update_user(id: int, user: UserSchema, session: Sessions, current_user: CurrentUser):
     if current_user.id != id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not enough permissions")
-    
+
     user_exist = session.scalar(select(User).where(User.email == user.email))
     if user_exist:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already registered")

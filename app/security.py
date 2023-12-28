@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_session
 from app.models import User
-from app.schemas import TokenData
+from app.schemas.token_schema import TokenData
 from app.settings import Settings
 
 settings = Settings()

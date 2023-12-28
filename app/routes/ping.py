@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.schemas import Message
+from app.schemas.base_schemas import Message
 
 router = APIRouter(prefix="/ping", tags=["ping"])
 

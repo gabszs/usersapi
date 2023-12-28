@@ -6,20 +6,9 @@ from sqlalchemy.pool import StaticPool
 
 from app.app import app
 from app.database import get_session
-from app.models import Base
-from app.models import User
+from app.models.base_model import Base
 from app.security import get_password_hash
-import factory
-
-
-class UserFactory(factory.Factory):
-    class Meta:
-        model = User
-
-    id = factory.Sequence(lambda x: x)
-    username = factory.LazyAttribute(lambda obj: f"test{obj.id}")
-    email = factory.LazyAttribute(lambda obj: f"{obj.username}@test.com")
-    password = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
+from tests.factories import UserFactory
 
 
 @pytest.fixture
@@ -60,6 +49,7 @@ def user(session):
 
     return user
 
+
 @pytest.fixture
 def other_user(session):
     password = "testtest"
@@ -72,6 +62,7 @@ def other_user(session):
     user.clean_password = password
 
     return user
+
 
 @pytest.fixture
 def token(client, user):

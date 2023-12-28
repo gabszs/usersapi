@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.app import app
-from app.schemas import UserPublicDto
+from app.schemas.users_schema import UserPublicDto
 
 client = TestClient(app)
 
@@ -15,7 +15,9 @@ def test_GET_should_return_200_success(client, user):
 
 
 def test_POST_should_return_409_already_registered(client, user):
-    response = client.post("/users/", json={"username": user.username, "email": user.email, "password": user.clean_password})
+    response = client.post(
+        "/users/", json={"username": user.username, "email": user.email, "password": user.clean_password}
+    )
 
     assert response.status_code == 409
     assert {"detail": "Username already registered"}
@@ -48,7 +50,7 @@ def test_PUT_should_return_200_success(client, user, token):
         headers={"Authorization": f"Bearer {token}"},
         json={"username": "Pedro", "email": "pedro@gmail.com", "password": user.clean_password},
     )
-    
+
     assert response.status_code == 200
     assert response.json() == {"id": user.id, "username": "Pedro", "email": "pedro@gmail.com"}
 
@@ -63,11 +65,12 @@ def test_PUT_should_return_401_unauthorized(client, user, token):
     assert response.status_code == 401
     assert response.json() == {"detail": "Not enough permissions"}
 
+
 def test_PUT_should_return_409_conflict(client, user, other_user, token):
     response = client.put(
         f"/users/{user.id}",
         headers={"Authorization": f"Bearer {token}"},
-        json={"username": other_user.username, "email": user.email, "password": user.clean_password}
+        json={"username": other_user.username, "email": user.email, "password": user.clean_password},
     )
 
     assert response.status_code == 409
@@ -87,8 +90,9 @@ def test_DELETE_should_return_200_OK_success(client, user, token):
     assert response.status_code == 200
     assert response.json() == {"detail": "User deleted"}
 
+
 def test_DELETE_should_return_401_with_wrong_user(client, other_user, token):
-    response = client.delete(f"/users/{other_user.id}", headers={'Authorization': f"Bearer {token}"})
+    response = client.delete(f"/users/{other_user.id}", headers={"Authorization": f"Bearer {token}"})
 
     assert response.status_code == 401
-    assert response.json() == {'detail': 'Not enough permissions'}
+    assert response.json() == {"detail": "Not enough permissions"}

@@ -5,6 +5,19 @@ from sqlalchemy.orm import Session
 
 from app.database import get_session
 from app.models import User
+from app.models.models import Todo
+
+
+def test_create_todo(session, user):
+    todo = Todo(title="Test Todo", description="Test Desc", state="draft", user_id=user.id)
+
+    session.add(todo)
+    session.commit()
+    session.refresh(todo)
+
+    user = session.scalar(select(User).where(User.id == user.id))
+
+    assert todo in user.todos
 
 
 def test_get_session():
