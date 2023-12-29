@@ -12,7 +12,7 @@ class TodoSchema(BaseModel):
 
 
 class TodoPublic(TodoSchema):
-    state: TodoState
+    id: int
 
 
 class TodoList(BaseModel):

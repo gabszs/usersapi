@@ -1,6 +1,12 @@
 from tests.factories import TodoFactory
 from tests.factories import TodoState
 
+fake_todo_json = {
+    "title": "test_title",
+    "description": "test_desc",
+    "state": TodoState.draft,
+}
+
 
 def test_GET_todos_should_return_200(client, user, session, headers_token):
     session.bulk_save_objects(TodoFactory.create_batch(5, user_id=user.id))
@@ -20,6 +26,27 @@ def test_GET_todos_pagination_should_return_200(client, user, session, headers_t
 
     assert response.status_code == 200
     assert len(response.json()["todos"]) == 2
+
+
+def test_POST_todos_201_created(client, headers_token):
+    response = client.post("/todos/", json=fake_todo_json, headers=headers_token)
+
+    assert response.status_code == 201
+    assert response.json() == {"id": 1} | fake_todo_json
+
+
+def test_POST_todos_422_unprocessed_entity(client, headers_token):
+    response = client.post(
+        "/todos/",
+        json={
+            "titlewrong": "test_title",
+            "descriptionwrong": "test_desc",
+            "statewrong": TodoState.draft,
+        },
+        headers=headers_token,
+    )
+
+    assert response.status_code == 422
 
 
 # TESTES COPIADOS

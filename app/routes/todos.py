@@ -49,7 +49,7 @@ def list_todos(
     return {"todos": todos}
 
 
-@router.post("/", response_model=TodoPublic)
+@router.post("/", status_code=201, response_model=TodoPublic)
 def create_todo(todo: TodoSchema, user: CurrentUser, session: Sessions):
     db_todo: Todo = Todo(title=todo.title, description=todo.description, state=todo.state, user_id=user.id)
 
