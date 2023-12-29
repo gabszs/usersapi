@@ -68,3 +68,8 @@ def other_user(session):
 def token(client, user):
     response = client.post("auth/token", data={"username": user.email, "password": user.clean_password})
     return response.json()["access_token"]
+
+
+@pytest.fixture
+def headers_token(token):
+    return {"Authorization": f"Bearer {token}"}

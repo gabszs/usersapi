@@ -44,10 +44,10 @@ def test_POST_should_return_422_Unprocessed_failed(client):
     assert response.status_code == 422
 
 
-def test_PUT_should_return_200_success(client, user, token):
+def test_PUT_should_return_200_success(client, user, headers_token):
     response = client.put(
         f"/users/{user.id}",
-        headers={"Authorization": f"Bearer {token}"},
+        headers=headers_token,
         json={"username": "Pedro", "email": "pedro@gmail.com", "password": user.clean_password},
     )
 
@@ -55,10 +55,10 @@ def test_PUT_should_return_200_success(client, user, token):
     assert response.json() == {"id": user.id, "username": "Pedro", "email": "pedro@gmail.com"}
 
 
-def test_PUT_should_return_401_unauthorized(client, user, token):
+def test_PUT_should_return_401_unauthorized(client, user, headers_token):
     response = client.put(
         "/users/0",
-        headers={"Authorization": f"Bearer {token}"},
+        headers=headers_token,
         json={"username": "Pedro", "email": "pedro@gmail.com", "password": "new_password"},
     )
 
@@ -66,10 +66,10 @@ def test_PUT_should_return_401_unauthorized(client, user, token):
     assert response.json() == {"detail": "Not enough permissions"}
 
 
-def test_PUT_should_return_409_conflict(client, user, other_user, token):
+def test_PUT_should_return_409_conflict(client, user, other_user, headers_token):
     response = client.put(
         f"/users/{user.id}",
-        headers={"Authorization": f"Bearer {token}"},
+        headers=headers_token,
         json={"username": other_user.username, "email": user.email, "password": user.clean_password},
     )
 
@@ -77,22 +77,22 @@ def test_PUT_should_return_409_conflict(client, user, other_user, token):
     assert response.json() == {"detail": "Username already registered"}
 
 
-def test_DELETE_should_return_404_failed(client, user, token):
-    response = client.delete("/users/2", headers={"Authorization": f"Bearer {token}"})
+def test_DELETE_should_return_404_failed(client, user, headers_token):
+    response = client.delete("/users/2", headers=headers_token)
 
     response.status_code == 400
     assert response.json() == {"detail": "Not enough permissions"}
 
 
-def test_DELETE_should_return_200_OK_success(client, user, token):
-    response = client.delete(f"/users/{user.id}", headers={"Authorization": f"Bearer {token}"})
+def test_DELETE_should_return_200_OK_success(client, user, headers_token):
+    response = client.delete(f"/users/{user.id}", headers=headers_token)
 
     assert response.status_code == 200
     assert response.json() == {"detail": "User deleted"}
 
 
-def test_DELETE_should_return_401_with_wrong_user(client, other_user, token):
-    response = client.delete(f"/users/{other_user.id}", headers={"Authorization": f"Bearer {token}"})
+def test_DELETE_should_return_401_with_wrong_user(client, other_user, headers_token):
+    response = client.delete(f"/users/{other_user.id}", headers=headers_token)
 
     assert response.status_code == 401
     assert response.json() == {"detail": "Not enough permissions"}

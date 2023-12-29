@@ -87,8 +87,8 @@ def test_token_expired_dont_refresh(client, user):
         assert response.json() == {"detail": "Could not validate credentials"}
 
 
-def test_refresh_token(client, user, token):
-    response = client.post("/auth/refresh_token", headers={"Authorization": f"Bearer {token}"})
+def test_refresh_token(client, user, headers_token):
+    response = client.post("/auth/refresh_token", headers=headers_token)
     data = response.json()
 
     assert response.status_code == 200
