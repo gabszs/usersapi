@@ -8,6 +8,7 @@ from app.models import User
 from app.models.models import Todo
 from app.settings import Settings
 
+
 def test_create_todo(session, user):
     todo = Todo(title="Test Todo", description="Test Desc", state="draft", user_id=user.id)
 
