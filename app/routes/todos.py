@@ -87,4 +87,4 @@ def delete_todo(todo_id: int, session: Sessions, user: CurrentUser):
     session.delete(todo)
     session.commit()
 
-    return Message(detail="Task has been deleted successfully.")
+    return {"detail": "Task has been deleted successfully."}

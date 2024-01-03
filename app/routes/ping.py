@@ -7,4 +7,4 @@ router = APIRouter(prefix="/ping", tags=["ping"])
 
 @router.get("/")
 async def ping(response_model=Message):
-    return Message(detail="Pong")
+    return {"detail":"Pong"}

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database import get_session
 from app.models import User
 from app.models.models import Todo
-
+from app.settings import Settings
 
 def test_create_todo(session, user):
     todo = Todo(title="Test Todo", description="Test Desc", state="draft", user_id=user.id)
@@ -22,7 +22,8 @@ def test_create_todo(session, user):
 
 def test_get_session():
     with pytest.MonkeyPatch.context() as env_mock:
-        env_mock.setenv("DATABASE_URL", "sqlite:///:memory:")
+        TEST_DATABASE_URL = Settings().TEST_DATABASE_URL
+        env_mock.setenv("DATABASE_URL", TEST_DATABASE_URL)
 
         session_generator = get_session()
 

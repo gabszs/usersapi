@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  fast_app:
+    image: fast_app
+    entrypoint: ./entrypoint.sh
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+    - test_database
+    - fast_app_database
+    env_file:
+      - ./.env
+    ports:
+      - 8000:8000
+
+
+  fast_app_database:
+    image: postgres
+    env_file:
+      - ./.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  test_database:
+    image: postgres
+    env_file:
+      - ./.env
+    volumes:
+      - pgdata_test:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+
+volumes:
+  pgdata:
+  pgdata_test:

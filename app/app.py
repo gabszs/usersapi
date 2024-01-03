@@ -22,5 +22,5 @@ app.include_router(users_router)
 app.include_router(auth_router)
 app.include_router(ping_router)
 
-# if __name__ == "__main__":
-#     uvicorn.run("app.app:app", host="0.0.0.0", port=8000)
+if __name__ == "__main__":
+    uvicorn.run("app.app:app", host="0.0.0.0", port=8000)

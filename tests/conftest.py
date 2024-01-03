@@ -2,25 +2,25 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
 
 from app.app import app
 from app.database import get_session
 from app.models.base_model import Base
 from app.security import get_password_hash
+from app.settings import Settings
 from tests.factories import UserFactory
+# from sqlalchemy.pool import StaticPool
 
 
 @pytest.fixture
 def session():
-    engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
+    engine = create_engine(Settings().TEST_DATABASE_URL)
     Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base.metadata.create_all(engine)
-    yield Session()
+    with Session() as session:
+        yield session
+        session.rollback()
+
     Base.metadata.drop_all(engine)
 
 
