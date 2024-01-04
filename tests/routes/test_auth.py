@@ -22,21 +22,21 @@ def test_token_expired_after_time(client, user):
 def test_token_inexistent_user(client):
     response = client.post("/auth/token", data={"username": "test@test.com", "password": "testword"})
 
-    assert response.status_code == 400
+    assert response.status_code == 401
     assert response.json() == {"detail": "Incorrect email or password"}
 
 
 def test_token_wrong_password(client, user):
     response = client.post("/auth/token", data={"username": user.username, "password": "wrongpassword"})
 
-    assert response.status_code == 400
+    assert response.status_code == 401
     assert response.json() == {"detail": "Incorrect email or password"}
 
 
 def test_token_wrong_email(client, user):
     response = client.post("/auth/token", data={"username": "wrong@password.com", "password": user.clean_password})
 
-    assert response.status_code == 400
+    assert response.status_code == 401
     assert response.json() == {"detail": "Incorrect email or password"}
 
 
@@ -62,14 +62,14 @@ def test_get_token(client, user):
 def test_get_token_400_incorrect_password(client, user):
     request = client.post("auth/token/", data={"username": user.email, "password": "wrong_password"})
 
-    assert request.status_code == 400
+    assert request.status_code == 401
     assert request.json() == {"detail": "Incorrect email or password"}
 
 
 def test_get_token_400_incorrect_username(client, user):
     request = client.post("auth/token/", data={"username": "wrong_user", "password": user.clean_password})
 
-    assert request.status_code == 400
+    assert request.status_code == 401
     assert request.json() == {"detail": "Incorrect email or password"}
 
 
