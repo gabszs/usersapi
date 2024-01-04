@@ -3,10 +3,10 @@ from sqlalchemy import select
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.database import get_session
+from app.core.database import get_session
+from app.core.settings import Settings
 from app.models import User
 from app.models.models import Todo
-from app.settings import Settings
 
 
 def test_create_todo(session, user):

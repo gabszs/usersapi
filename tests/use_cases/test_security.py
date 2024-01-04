@@ -1,7 +1,7 @@
 from jose import jwt
 
-from app.security import create_access_token
-from app.settings import Settings
+from app.core.security import create_access_token
+from app.core.settings import Settings
 
 settings = Settings()
 
