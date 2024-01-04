@@ -5,6 +5,6 @@ from app.schemas.base_schemas import Message
 router = APIRouter(prefix="/ping", tags=["ping"])
 
 
-@router.get("/")
-async def ping(response_model=Message):
-    return {"detail": "Pong"}
+@router.get("/", response_model=Message)
+async def ping():
+    return Message(detail="Pong")
