@@ -9,11 +9,16 @@ from app.core.security import get_password_hash
 from app.core.settings import Settings
 from app.models.base_model import Base
 from tests.factories import UserFactory
-# from sqlalchemy.pool import StaticPool
 
 
 @pytest.fixture
-def session():
+def set_dev_mode():
+    with pytest.MonkeyPatch.context() as env_mock:
+        env_mock.setenv("TEST_MODE", True)
+
+
+@pytest.fixture
+def session(set_dev_mode):
     engine = create_engine(Settings().TEST_DATABASE_URL)
     Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base.metadata.create_all(engine)
