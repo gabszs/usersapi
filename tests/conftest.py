@@ -1,3 +1,5 @@
+from os import environ
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -13,8 +15,7 @@ from tests.factories import UserFactory
 
 @pytest.fixture
 def set_dev_mode():
-    with pytest.MonkeyPatch.context() as env_mock:
-        env_mock.setenv("TEST_MODE", True)
+    environ["TEST_MODE"] = "True"
 
 
 @pytest.fixture
