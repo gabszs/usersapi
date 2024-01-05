@@ -5,7 +5,7 @@ description = ""
 authors = ["GabrielCarvalho <gabriel.carvalho@huawei.com>"]
 readme = "README.md"
 #packages = [{include = "market_api"}]
-
+# dependencies
 [tool.poetry.dependencies]
 python = "3.11.*"
 fastapi = "^0.105.0"
