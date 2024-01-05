@@ -52,7 +52,11 @@ def update_user(id: int, user: UserSchema, session: Sessions, current_user: Curr
         raise InvalidCredentials(detail="Not enough permissions")
 
     user_exist = session.scalar(select(User).where(User.email == user.email))
-    if user_exist:
+    is_user_email = current_user.email == user.email
+
+    if (
+        user_exist and not is_user_email
+    ):  # User cannot change his email to another that already exists Expcept if he already have the email
         raise DuplicatedError(detail="Username already registered")
 
     current_user.username = user.username
