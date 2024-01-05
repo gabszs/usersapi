@@ -1,10 +1,8 @@
-import pytest
 from sqlalchemy import select
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.core.database import get_session
-from app.core.settings import Settings
 from app.models import User
 from app.models.models import Todo
 
@@ -21,18 +19,14 @@ def test_create_todo(session, user):
     assert todo in user.todos
 
 
-def test_get_session():
-    with pytest.MonkeyPatch.context() as env_mock:
-        TEST_DATABASE_URL = Settings().TEST_DATABASE_URL
-        env_mock.setenv("DATABASE_URL", TEST_DATABASE_URL)
+def test_get_session(set_dev_mode):
+    session_generator = get_session()
 
-        session_generator = get_session()
+    session_instance = next(session_generator, None)
+    assert isinstance(session_instance, Session)
 
-        session_instance = next(session_generator, None)
-        assert isinstance(session_instance, Session)
-
-        result = session_instance.execute(text("SELECT 1"))
-        assert result.scalar() == 1
+    result = session_instance.execute(text("SELECT 1"))
+    assert result.scalar() == 1
 
 
 def test_create_user_success(session):
