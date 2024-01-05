@@ -1,10 +1,13 @@
-import uvicorn
+import logging
+
 from fastapi import FastAPI
 
 from app.routes import auth_router
 from app.routes import ping_router
 from app.routes import todos_router
 from app.routes import users_router
+
+logging.getLogger("passlib").setLevel(logging.ERROR)
 
 app = FastAPI(
     title="UsersApi",
@@ -22,5 +25,5 @@ app.include_router(users_router)
 app.include_router(auth_router)
 app.include_router(ping_router)
 
-if __name__ == "__main__":
-    uvicorn.run("app.app:app", host="0.0.0.0", port=8000)
+# if __name__ == "__main__":
+#     uvicorn.run("app.app:app", host="0.0.0.0", port=8000)

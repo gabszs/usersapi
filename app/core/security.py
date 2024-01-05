@@ -2,8 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 
 from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from jose import JWTError
@@ -11,10 +9,11 @@ from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.database import get_session
+from app.core.database import get_session
+from app.core.exceptions import InvalidCredentials
+from app.core.settings import Settings
 from app.models import User
 from app.schemas.token_schema import TokenData
-from app.settings import Settings
 
 settings = Settings()
 
@@ -45,10 +44,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
 async def get_current_user(session: Session = Depends(get_session), token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+    # credentials_exception = HTTPException(
+    #    status_code=status.HTTP_401_UNAUTHORIZED,
+    #    detail="Could not validate credentials",
+    #    headers={"WWW-Authenticate": "Bearer"},
+    # )
+    credentials_exception = InvalidCredentials(
+        detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"}
     )
 
     try:

@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 # applicate the migrations
 alembic upgrade head

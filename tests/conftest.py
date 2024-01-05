@@ -1,19 +1,25 @@
+from os import environ
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.app import app
-from app.database import get_session
+from app.core.database import get_session
+from app.core.security import get_password_hash
+from app.core.settings import Settings
 from app.models.base_model import Base
-from app.security import get_password_hash
-from app.settings import Settings
 from tests.factories import UserFactory
-# from sqlalchemy.pool import StaticPool
 
 
 @pytest.fixture
-def session():
+def set_dev_mode():
+    environ["TEST_MODE"] = "True"
+
+
+@pytest.fixture
+def session(set_dev_mode):
     engine = create_engine(Settings().TEST_DATABASE_URL)
     Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base.metadata.create_all(engine)

@@ -66,11 +66,22 @@ def test_PUT_should_return_401_unauthorized(client, user, headers_token):
     assert response.json() == {"detail": "Not enough permissions"}
 
 
-def test_PUT_should_return_409_conflict(client, user, other_user, headers_token):
+def test_PUT_should_return_200_OK_same_email(client, user, other_user, headers_token):
     response = client.put(
         f"/users/{user.id}",
         headers=headers_token,
         json={"username": other_user.username, "email": user.email, "password": user.clean_password},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"id": user.id, "username": other_user.username, "email": user.email}
+
+
+def test_PUT_should_return_409_conflict(client, user, other_user, headers_token):
+    response = client.put(
+        f"/users/{user.id}",
+        headers=headers_token,
+        json={"username": other_user.username, "email": other_user.email, "password": user.clean_password},
     )
 
     assert response.status_code == 409
